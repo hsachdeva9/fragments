@@ -12,5 +12,8 @@
     "url": "git+https://github.com/hsachdeva9/fragments.git"
   },
   "author": "Hitesh Sachdeva",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
 }

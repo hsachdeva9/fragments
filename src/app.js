@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
+const passport = require('passport');
+const authenticate = require('./auth');
 
 const logger = require('./logger');
 const pino = require('pino-http')({
@@ -14,6 +16,9 @@ const pino = require('pino-http')({
 // Create an express app instance we can use to attach middleware and HTTP routes
 const app = express();
 
+// Use CORS middleware so we can make requests across origins
+app.use(cors());
+
 // Define our routes
 app.use('/', require('./routes'));
 
@@ -23,12 +28,14 @@ app.use(pino);
 // Use helmetjs security middleware
 app.use(helmet());
 
-// Use CORS middleware so we can make requests across origins
-app.use(cors());
+
 
 // Use gzip/deflate compression middleware
 app.use(compression());
 
+// Set up our passport authentication middleware
+passport.use(authenticate.strategy());
+app.use(passport.initialize());
 
 // Add 404 middleware to handle any requests for resources that can't be found
 app.use((req, res) => {

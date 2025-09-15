@@ -19,15 +19,15 @@ const app = express();
 // Use CORS middleware so we can make requests across origins
 app.use(cors());
 
-// Define our routes
-app.use('/', require('./routes'));
-
 // Use pino logging middleware
 app.use(pino);
 
+
+// Define our routes
+app.use('/', require('./routes'));
+
 // Use helmetjs security middleware
 app.use(helmet());
-
 
 
 // Use gzip/deflate compression middleware

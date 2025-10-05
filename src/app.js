@@ -18,8 +18,11 @@ const { createErrorResponse } = require('./response');
 // Create an express app instance we can use to attach middleware and HTTP routes
 const app = express();
 
+
 // Use CORS middleware so we can make requests across origins
-app.use(cors());
+app.use(cors({
+  exposedHeaders: ['Location']
+}));
 
 // Use pino logging middleware
 app.use(pino);

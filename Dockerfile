@@ -1,5 +1,9 @@
+# ======================
+# Stage 1: Dependencies
+# ======================
+
 # Use node version 22.12.0
-FROM node:22.16.0-alpine AS dependencies
+FROM node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e AS dependencies
 
 LABEL maintainer="Hitesh Sachdeva <hsachdeva9@myseneca.ca>"
 LABEL description="Fragments node.js microservice"
@@ -20,7 +24,7 @@ RUN npm ci --only=production
 # ======================
 # Stage 2: Production Image
 # ======================
-FROM node:22.16.0-alpine AS production
+FROM node:22.16.0-alpine@sha256:41e4389f3d988d2ed55392df4db1420ad048ae53324a8e2b7c6d19508288107e AS production
 
 # Set production environment
 ENV NODE_ENV=production \

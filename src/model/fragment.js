@@ -1,8 +1,13 @@
+// src/model/fragment.js
 // Use crypto.randomUUID() to create unique IDs, see:
 // https://nodejs.org/api/crypto.html#cryptorandomuuidoptions
 const { randomUUID } = require('crypto');
 // Use https://www.npmjs.com/package/content-type to create/parse Content-Type headers
 const contentType = require('content-type');
+// Add at the top with other requires
+const MarkdownIt = require('markdown-it');
+const md = new MarkdownIt();
+
 
 // Functions for working with fragment metadata/data using our DB
 const {
@@ -51,7 +56,7 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-     const list = await listFragments(ownerId);
+    const list = await listFragments(ownerId);
 
     if (!expand) return list; 
 
@@ -73,8 +78,8 @@ class Fragment {
    */
   static async byId(ownerId, id) {
     const fragmentData = await readFragment(ownerId, id);
-  if (!fragmentData) throw new Error(`Fragment not found: ${id}`);
-  return new Fragment({ ...fragmentData, ownerId });
+    if (!fragmentData) throw new Error(`Fragment not found: ${id}`);
+    return new Fragment({ ...fragmentData, ownerId });
   }
 
   /**
@@ -101,7 +106,7 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   getData() {
-     return readFragmentData(this.ownerId, this.id);
+    return readFragmentData(this.ownerId, this.id);
   }
 
   /**
@@ -110,7 +115,6 @@ class Fragment {
    * @returns Promise<void>
    */
   async setData(data) {
-
     if (!Buffer.isBuffer(data)) throw new Error('Data must be a Buffer');
 
     this.size = data.length;
@@ -142,7 +146,16 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
-     return this.mimeType === 'text/plain' ? ['text/plain'] : [];
+    // Map of type to convertible formats
+    const conversionMap = {
+      'text/plain': ['text/plain'],
+      'text/markdown': ['text/markdown', 'text/html', 'text/plain'],
+      'text/html': ['text/html', 'text/plain'],
+      'text/csv': ['text/csv', 'text/plain', 'application/json'],
+      'application/json': ['application/json', 'text/plain'],
+    };
+
+    return conversionMap[this.mimeType] || [this.mimeType];
   }
 
   /**
@@ -157,6 +170,71 @@ class Fragment {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Returns true if the given extension is valid for this fragment type
+   * @param {string} ext - file extension (e.g., '.html', '.md')
+   * @returns {boolean}
+   */
+  static isValidExtension(ext) {
+    const validExtensions = ['.txt', '.md', '.html', '.json', '.csv'];
+    return validExtensions.includes(ext);
+  }
+
+  /**
+   * Maps file extensions to MIME types
+   * @param {string} ext - file extension (e.g., '.html')
+   * @returns {string} MIME type
+   */
+  static mimeTypeForExtension(ext) {
+    const extToMime = {
+      '.txt': 'text/plain',
+      '.md': 'text/markdown',
+      '.html': 'text/html',
+      '.json': 'application/json',
+      '.csv': 'text/csv',
+    };
+
+    return extToMime[ext] || null;
+  }
+
+  /**
+   * Converts fragment data to the specified type
+   * @param {Buffer} data - original fragment data
+   * @param {string} targetType - target MIME type
+   * @returns {Buffer} converted data
+   */
+  async convertData(data, targetType) {
+    const sourceType = this.mimeType;
+
+    // No conversion needed
+    if (sourceType === targetType) {
+      return data;
+    }
+
+    // Markdown to HTML conversion
+    if (sourceType === 'text/markdown' && targetType === 'text/html') {
+      const markdownText = data.toString();
+      const htmlText = md.render(markdownText);
+      return Buffer.from(htmlText);
+    }
+
+    // Markdown to Plain Text (strip formatting)
+    if (sourceType === 'text/markdown' && targetType === 'text/plain') {
+      return data; // Return raw markdown as plain text
+    }
+
+    // HTML to Plain Text (strip tags - basic)
+    if (sourceType === 'text/html' && targetType === 'text/plain') {
+      const htmlText = data.toString();
+      const plainText = htmlText.replace(/<[^>]*>/g, '');
+      return Buffer.from(plainText);
+    }
+
+    // Add more conversions in Assignment 3
+    
+    throw new Error(`Conversion from ${sourceType} to ${targetType} not supported`);
   }
 }
 

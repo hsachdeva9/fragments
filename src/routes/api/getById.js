@@ -14,8 +14,17 @@ module.exports = async (req, res) => {
     // Get the actual fragment data
     const data = await fragment.getData();
 
-    // Return raw data with correct Content-Type
-    res.status(200).type(fragment.type).send(data);
+    // For text types and JSON, always add charset=utf-8
+    let contentType = fragment.type;
+    const needsCharset = fragment.isText || fragment.mimeType === 'application/json';
+    if (needsCharset && !contentType.includes('charset')) {
+      contentType = `${contentType}; charset=utf-8`;
+    }
+
+    // Set Content-Type and return raw data
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Length', data.length);
+    res.status(200).end(data);
     
   } catch (err) {
     // Check if it's a "not found" error

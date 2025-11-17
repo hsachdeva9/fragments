@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
 
     // Location header
     const baseUrl = process.env.API_URL || `http://${req.headers.host}`;
-    const location = new URL(`/fragments/${fragment.id}`, baseUrl).toString();
+    const location = new URL(`/v1/fragments/${fragment.id}`, baseUrl).toString();
     res.set('Location', location);
 
     logger.info(`POST /fragments: fragment created id=${fragment.id}`);

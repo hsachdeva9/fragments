@@ -42,6 +42,9 @@ COPY --chown=node:node --from=dependencies /app/node_modules ./node_modules
 COPY --chown=node:node ./src ./src
 COPY --chown=node:node package*.json ./
 
+# Copy htpasswd file for HTTP Basic Auth
+COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
+
 # Switch to non-root user
 USER node
 

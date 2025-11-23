@@ -10,6 +10,7 @@ services:
     build: .
     # Environment variables to use
     environment:
+      - PORT=8080
       - API_URL=http://localhost:8080
       # Use Basic Auth (for running tests, CI)
       - HTPASSWD_FILE=tests/.htpasswd

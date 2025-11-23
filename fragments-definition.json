@@ -42,6 +42,10 @@
                 {
                     "name": "AWS_COGNITO_CLIENT_ID",
                     "value": "PLACEHOLDER_AWS_COGNITO_CLIENT_ID"
+                },
+                {
+                    "name": "AWS_S3_BUCKET_NAME",
+                    "value": "fragments-bucket"
                 }
             ],
             "logConfiguration": {

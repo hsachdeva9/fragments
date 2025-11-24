@@ -36,6 +36,14 @@
                     "value": "debug"
                 },
                 {
+                  "name": "AWS_REGION",
+                  "value": "us-east-1"
+                },
+                {
+                  "name": "API_URL",
+                  "value": "http://fragments-lb-1698229630.us-east-1.elb.amazonaws.com"
+                },
+                {
                     "name": "AWS_COGNITO_POOL_ID",
                     "value": "PLACEHOLDER_AWS_COGNITO_POOL_ID"
                 },
@@ -45,7 +53,7 @@
                 },
                 {
                     "name": "AWS_S3_BUCKET_NAME",
-                    "value": "fragments-bucket"
+                    "value": "hsachdeva9-fragments"
                 }
             ],
             "logConfiguration": {
